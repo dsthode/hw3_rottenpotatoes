@@ -53,6 +53,7 @@ Then /I should see no movies/ do
   if page.respond_to? :should
     page.should have_xpath("//table[@id='movies']/tbody[count(./tr) = 0]")
   else
+    assert page.has_xpath("//table[@id='movies']/tbody[count(./tr) = 0]")
   end
 end
 
