@@ -14,7 +14,7 @@ end
 Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
   #  ensure that that e1 occurs before e2.
   #  page.content  is the entire content of the page as a string.
-  assert false, "Unimplmemented"
+  assert page.body.match(/#{e1}.*#{e2}/m) != nil, "Failed order"
 end
 
 # Make it easier to express checking or unchecking several boxes at once
@@ -60,5 +60,19 @@ Then /I should see all the movies/ do
   if page.respond_to? :should
     page.should have_xpath("//table[@id='movies']/tbody[count(./tr) = #{Movie.count}]")
   else
+    assert page.has_xpath("//table[@id='movies']/tbody[count(./tr) = #{Movie.count}]")
+  end
+end
+
+Then /I should see movies sorted by "(.*)"/ do |sorting_field|
+  movies = Movie.find(:all, :order => sorting_field)
+  count = 1
+  movies.each do |movie|
+    if page.respond_to? :should
+      page.should have_xpath("//table[@id='movies']/tbody/tr[#{count}]/td[3][contains(., '#{movie.release_date}')]")
+    else
+      assert page.has_xpath("//table[@id='movies']/tbody/tr[#{count}]/td[3][contains(., '#{movie.release_date}')]")
+    end
+    count += 1
   end
 end
